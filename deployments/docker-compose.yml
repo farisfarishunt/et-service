@@ -1,0 +1,32 @@
+version: "3.7"
+services:
+  blockchain-grabber-service:
+    build:
+        context: ./
+        dockerfile: Dockerfile
+    env_file:
+      - .env
+    ports:
+      - ${BLOCKCHAIN_GRABBER_SERVICE_PORT_EXTERNAL}:${BLOCKCHAIN_GRABBER_SERVICE_PORT_INTERNAL}
+    working_dir: /go/src/github.com/farisfarishunt/et-service
+    volumes:
+      - ../:/go/src/github.com/farisfarishunt/et-service
+      # Hiding "deployments" folder contents inside the docker
+      - /go/src/github.com/farisfarishunt/et-service/deployments
+    # CompileDaemon tracks "go" files and rebuild the app inside the docker if they change
+    command: CompileDaemon -build="go mod tidy && go build -o /local ./cmd/service/main.go" -command="/local" -log-prefix=true -exclude-dir=.git
+    depends_on:
+      - blockchain-db
+  blockchain-db:
+    image: postgres:14.2
+    environment:
+      POSTGRES_DB: ${BLOCKCHAIN_DB_NAME}
+      POSTGRES_USER: ${BLOCKCHAIN_DB_USER}
+      POSTGRES_PASSWORD: ${BLOCKCHAIN_DB_PASSWORD}
+    ports:
+      - ${BLOCKCHAIN_DB_PORT_EXTERNAL}:${BLOCKCHAIN_DB_PORT_INTERNAL}
+    volumes:
+      - db:/var/lib/postgresql/data
+
+volumes:
+  db:
