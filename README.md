@@ -115,6 +115,8 @@ And [CompileDaemon](https://github.com/githubnemo/CompileDaemon) is used to trac
 
 Improvements that can be done for this project:
 
+- **Tests**
+
 - **Error wrapping** - currently errors are returned "as is". It's better to wrap every error in place of function use. For instance:
 
 ```go
@@ -122,6 +124,10 @@ err := fmt.Errorf("access denied: %w", ErrPermission)
 ```
 
 - **Improve logging** - currently only errors and some third-party libraries messages are presented in logs. Logs don't have levels (they're not divided into *INFO*, *ERROR* etc.).
+
+- **Divide one app into two services: grabber and server**
+
+- **CompileDaemon is not working on Windows host**
 
 - **Static documentation generation for the module**
 
