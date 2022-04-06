@@ -8,21 +8,7 @@ import (
 )
 
 func main() {
-    db, cronDb, server, cfg, err := service.NewService()
-    if db != nil {
-        defer func() {
-            if db, _ := db.DB(); db != nil {
-                db.Close()
-            }
-        } ()
-    }
-    if cronDb != nil {
-        defer func() {
-            if cronDb, _ := cronDb.DB(); cronDb != nil {
-                cronDb.Close()
-            }
-        } ()
-    }
+    server, cfg, err := service.NewService()
     if err != nil {
         logger.Log(err)
         return

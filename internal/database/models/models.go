@@ -14,7 +14,7 @@ type ExchangeTicker struct {
     Volume float64
     LastTrade float64
     CreatedAt time.Time
-    DeletedAt gorm.DeletedAt
+    DeletedAt gorm.DeletedAt `gorm:"index"`
     SymbolID uint32
     Symbol Symbol
 }

@@ -3,7 +3,6 @@ package service
 import (
     "time"
 
-    "gorm.io/gorm"
     "github.com/go-co-op/gocron"
     "github.com/gin-gonic/gin"
 
@@ -15,18 +14,13 @@ import (
 )
 
 // Performs server systems initialization and returns it's parts
-func NewService() (db *gorm.DB, cronDb *gorm.DB, server *gin.Engine, cfg *config.Config, err error) {
+func NewService() (server *gin.Engine, cfg *config.Config, err error) {
     cfg, err = config.NewConfig()
     if err != nil {
         return
     }
 
-    db, err = database.NewConnection(cfg.DbHost, cfg.DbUser, cfg.DbPassword, cfg.DbPort, cfg.DbName)
-    if err != nil {
-        return
-    }
-    
-    cronDb, err = database.NewConnection(cfg.DbHost, cfg.DbUser, cfg.DbPassword, cfg.DbPort, cfg.DbName)
+    db, err := database.NewConnection(cfg.DbHost, cfg.DbUser, cfg.DbPassword, cfg.DbPort, cfg.DbName)
     if err != nil {
         return
     }
@@ -35,7 +29,7 @@ func NewService() (db *gorm.DB, cronDb *gorm.DB, server *gin.Engine, cfg *config
     scheduler := gocron.NewScheduler(time.UTC)
     cron.Spawn(
         scheduler,
-        grabber.GrabExchangeTickers(cronDb, cfg.ExchangeTickerUrl, scheduler.CronWithSeconds(cfg.CronGrabInterval)),
+        grabber.GrabExchangeTickers(db, cfg.ExchangeTickerUrl, scheduler.CronWithSeconds(cfg.CronGrabInterval)),
     )
 
     server = router.NewRouter(db)
